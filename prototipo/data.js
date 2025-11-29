@@ -179,6 +179,81 @@ const mockData = {
             { metodo: "Tarjeta Crédito", cantidad: 8000, porcentaje: 18 },
             { metodo: "Transferencia", cantidad: 2000, porcentaje: 4 }
         ]
+    },
+    
+    // Datos para el POS - Punto de Venta
+    pos: {
+        franquiciaId: 1,
+        franquiciaNombre: "Panadería Centro",
+        caja: {
+            id: 1,
+            estado: "abierta",
+            fondoInicial: 50000,
+            totalVentas: 45000,
+            totalEgresos: 0,
+            efectivoEsperado: 95000,
+            efectivoActual: 0
+        },
+        categorias: [
+            { id: 1, nombre: "Pan", icono: "🍞", color: "orange" },
+            { id: 2, nombre: "Facturas", icono: "🥐", color: "yellow" },
+            { id: 3, nombre: "Tortas", icono: "🎂", color: "pink" },
+            { id: 4, nombre: "Sandwiches", icono: "🥪", color: "green" },
+            { id: 5, nombre: "Bebidas", icono: "🥤", color: "blue" }
+        ],
+        productos: [
+            // Pan
+            { id: 1, nombre: "Pan de Miga", categoria: 1, precio: 150, stock: 25, disponible: true, favorito: true },
+            { id: 2, nombre: "Pan Francés", categoria: 1, precio: 150, stock: 35, disponible: true, favorito: false },
+            { id: 3, nombre: "Pan de Campo", categoria: 1, precio: 180, stock: 20, disponible: true, favorito: false },
+            { id: 4, nombre: "Pan Integral", categoria: 1, precio: 200, stock: 15, disponible: true, favorito: false },
+            // Facturas
+            { id: 5, nombre: "Medialunas", categoria: 2, precio: 200, stock: 45, disponible: true, favorito: true },
+            { id: 6, nombre: "Facturas", categoria: 2, precio: 150, stock: 50, disponible: true, favorito: true },
+            { id: 7, nombre: "Tortitas Negras", categoria: 2, precio: 120, stock: 30, disponible: true, favorito: false },
+            { id: 8, nombre: "Cañoncitos", categoria: 2, precio: 180, stock: 25, disponible: true, favorito: false },
+            // Tortas
+            { id: 9, nombre: "Torta de Chocolate", categoria: 3, precio: 750, stock: 8, disponible: true, favorito: true },
+            { id: 10, nombre: "Torta de Frutilla", categoria: 3, precio: 800, stock: 6, disponible: true, favorito: false },
+            { id: 11, nombre: "Torta de Ricota", categoria: 3, precio: 650, stock: 5, disponible: true, favorito: false },
+            { id: 12, nombre: "Torta de Limón", categoria: 3, precio: 700, stock: 4, disponible: true, favorito: false },
+            // Sandwiches
+            { id: 13, nombre: "Sandwich de Jamón y Queso", categoria: 4, precio: 350, stock: 10, disponible: true, favorito: true },
+            { id: 14, nombre: "Sandwich de Milanesa", categoria: 4, precio: 450, stock: 8, disponible: true, favorito: false },
+            { id: 15, nombre: "Sandwich de Pollo", categoria: 4, precio: 400, stock: 12, disponible: true, favorito: false },
+            // Bebidas
+            { id: 16, nombre: "Café", categoria: 5, precio: 200, stock: 999, disponible: true, favorito: true },
+            { id: 17, nombre: "Té", categoria: 5, precio: 150, stock: 999, disponible: true, favorito: false },
+            { id: 18, nombre: "Agua Mineral", categoria: 5, precio: 250, stock: 50, disponible: true, favorito: false },
+            { id: 19, nombre: "Gaseosa", categoria: 5, precio: 300, stock: 40, disponible: true, favorito: false }
+        ],
+        carrito: [],
+        ventaActual: {
+            items: [],
+            subtotal: 0,
+            descuento: 0,
+            total: 0,
+            cliente: null,
+            medioPago: null
+        },
+        mediosPago: [
+            { id: 1, nombre: "Efectivo", icono: "💵", disponible: true },
+            { id: 2, nombre: "Tarjeta Débito", icono: "💳", disponible: true },
+            { id: 3, nombre: "Tarjeta Crédito", icono: "💳", disponible: true },
+            { id: 4, nombre: "Transferencia", icono: "📱", disponible: true },
+            { id: 5, nombre: "QR", icono: "📲", disponible: true }
+        ],
+        usuarioActual: {
+            id: 1,
+            nombre: "Juan Pérez",
+            rol: "Cajero",
+            cajaId: 1
+        },
+        ventasHoy: [
+            { id: 1, hora: "08:15", productos: 3, total: 450, medioPago: "Efectivo", cliente: "Cliente 1" },
+            { id: 2, hora: "08:30", productos: 2, total: 300, medioPago: "Tarjeta Débito", cliente: null },
+            { id: 3, hora: "09:00", productos: 5, total: 950, medioPago: "Efectivo", cliente: "Cliente 2" }
+        ]
     }
 };
 

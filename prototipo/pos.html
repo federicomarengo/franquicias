@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Punto de Venta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .producto-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .producto-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .producto-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="../index.html" class="text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800" id="nombre-franquicia-pos">POS - Panadería</h1>
+                    <p class="text-xs text-gray-500" id="cajero-nombre">Cajero: -</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="text-right">
+                    <p class="text-xs text-gray-500">Caja</p>
+                    <p class="text-sm font-semibold text-green-600" id="estado-caja">Abierta</p>
+                </div>
+                <button onclick="mostrarModalCaja()" class="px-3 py-1 bg-gray-200 rounded-lg text-sm font-medium hover:bg-gray-300">
+                    Caja
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal - Layout Split -->
+    <div class="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
+        <!-- Panel Izquierdo - Productos -->
+        <div class="flex-1 overflow-y-auto p-4">
+            <!-- Barra de Búsqueda -->
+            <div class="mb-4">
+                <input type="text" id="busqueda-producto" placeholder="Buscar producto..." 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                       onkeyup="filtrarProductos()">
+            </div>
+
+            <!-- Categorías -->
+            <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
+                <button onclick="filtrarPorCategoria(null)" class="categoria-btn px-4 py-2 bg-green-600 text-white rounded-full text-sm font-medium whitespace-nowrap">
+                    Todas
+                </button>
+            </div>
+
+            <!-- Productos Favoritos (si aplica) -->
+            <div id="favoritos" class="mb-4 hidden">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">⭐ Favoritos</h3>
+                <div id="grid-favoritos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
+                    <!-- Se llenará con JS -->
+                </div>
+            </div>
+
+            <!-- Grid de Productos -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-2" id="titulo-categoria">Todos los Productos</h3>
+                <div id="grid-productos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Derecho - Carrito -->
+        <div class="w-full lg:w-96 bg-white shadow-lg flex flex-col">
+            <!-- Header del Carrito -->
+            <div class="px-4 py-3 border-b border-gray-200">
+                <h2 class="text-lg font-bold text-gray-800">Carrito de Compra</h2>
+                <p class="text-xs text-gray-500" id="cliente-actual">Cliente: Mostrador</p>
+            </div>
+
+            <!-- Items del Carrito -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div id="items-carrito" class="space-y-2">
+                    <div class="text-center text-gray-400 py-8">
+                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        <p class="text-sm">El carrito está vacío</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen del Carrito -->
+            <div class="border-t border-gray-200 p-4 space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Subtotal</span>
+                    <span class="font-semibold text-gray-800" id="subtotal">$0</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Descuento</span>
+                    <span class="font-semibold text-red-600" id="descuento">$0</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
+                    <span>Total</span>
+                    <span class="text-green-600" id="total">$0</span>
+                </div>
+                <button onclick="mostrarModalPago()" id="btn-pagar" disabled
+                        class="w-full bg-green-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    Realizar Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="modal-pago" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Seleccionar Medio de Pago</h2>
+                <button onclick="cerrarModalPago()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Total a pagar:</p>
+                <p class="text-2xl font-bold text-green-600" id="total-pagar">$0</p>
+            </div>
+            <div class="space-y-2 mb-4" id="medios-pago-lista">
+                <!-- Se llenará con JS -->
+            </div>
+            <button onclick="procesarPago()" class="w-full bg-green-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-green-700 transition-colors">
+                Confirmar Pago
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Caja -->
+    <div id="modal-caja" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Información de Caja</h2>
+                <button onclick="cerrarModalCaja()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Estado</span>
+                    <span class="font-semibold text-green-600" id="caja-estado-modal">Abierta</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Fondo Inicial</span>
+                    <span class="font-semibold" id="caja-fondo">$0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Ventas del Día</span>
+                    <span class="font-semibold" id="caja-ventas">$0</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                    <span class="text-gray-600 font-semibold">Efectivo Esperado</span>
+                    <span class="font-bold text-green-600" id="caja-esperado">$0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let categoriaActual = null;
+        let medioPagoSeleccionado = null;
+
+        // Cargar productos y categorías
+        function cargarProductos() {
+            const data = mockData.pos;
+            
+            // Cargar nombre de franquicia y cajero
+            document.getElementById('nombre-franquicia-pos').textContent = `POS - ${data.franquiciaNombre}`;
+            document.getElementById('cajero-nombre').textContent = `Cajero: ${data.usuarioActual.nombre}`;
+            
+            // Cargar categorías
+            const categoriasContainer = document.querySelector('.categoria-btn').parentElement;
+            const htmlCategorias = data.categorias.map(cat => `
+                <button onclick="filtrarPorCategoria(${cat.id})" class="categoria-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap">
+                    ${cat.icono} ${cat.nombre}
+                </button>
+            `).join('');
+            categoriasContainer.innerHTML = `<button onclick="filtrarPorCategoria(null)" class="categoria-btn px-4 py-2 bg-green-600 text-white rounded-full text-sm font-medium whitespace-nowrap">Todas</button>${htmlCategorias}`;
+            
+            // Cargar productos favoritos
+            const favoritos = data.productos.filter(p => p.favorito && p.disponible);
+            if (favoritos.length > 0) {
+                document.getElementById('favoritos').classList.remove('hidden');
+                const htmlFavoritos = favoritos.map(p => crearCardProducto(p)).join('');
+                document.getElementById('grid-favoritos').innerHTML = htmlFavoritos;
+            }
+            
+            // Cargar todos los productos
+            mostrarProductos(data.productos.filter(p => p.disponible));
+        }
+
+        // Crear card de producto
+        function crearCardProducto(producto) {
+            const categoria = mockData.pos.categorias.find(c => c.id === producto.categoria);
+            const colorBorde = categoria ? `border-${categoria.color}-200` : 'border-gray-200';
+            const stockClass = producto.stock <= 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+            
+            return `
+                <div onclick="agregarAlCarrito(${producto.id})" 
+                     class="producto-card bg-white rounded-xl p-3 border-2 ${colorBorde} cursor-pointer">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">${categoria?.icono || '🍞'}</div>
+                        <h3 class="text-sm font-semibold text-gray-800 mb-1">${producto.nombre}</h3>
+                        <p class="text-lg font-bold text-green-600 mb-2">${utils.formatCurrency(producto.precio)}</p>
+                        <div class="flex items-center justify-center">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${stockClass}">
+                                Stock: ${producto.stock}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mostrar productos
+        function mostrarProductos(productos) {
+            if (productos.length === 0) {
+                document.getElementById('grid-productos').innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">No hay productos disponibles</div>';
+                return;
+            }
+            
+            const html = productos.map(p => crearCardProducto(p)).join('');
+            document.getElementById('grid-productos').innerHTML = html;
+        }
+
+        // Filtrar por categoría
+        function filtrarPorCategoria(categoriaId) {
+            categoriaActual = categoriaId;
+            const data = mockData.pos;
+            
+            // Actualizar botones de categoría
+            document.querySelectorAll('.categoria-btn').forEach(btn => {
+                btn.classList.remove('bg-green-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event?.target?.classList.remove('bg-gray-200', 'text-gray-700');
+            event?.target?.classList.add('bg-green-600', 'text-white');
+            
+            let productos = data.productos.filter(p => p.disponible);
+            if (categoriaId) {
+                productos = productos.filter(p => p.categoria === categoriaId);
+                const categoria = data.categorias.find(c => c.id === categoriaId);
+                document.getElementById('titulo-categoria').textContent = categoria?.nombre || 'Productos';
+            } else {
+                document.getElementById('titulo-categoria').textContent = 'Todos los Productos';
+            }
+            
+            mostrarProductos(productos);
+        }
+
+        // Filtrar productos por búsqueda
+        function filtrarProductos() {
+            const busqueda = document.getElementById('busqueda-producto').value.toLowerCase();
+            const data = mockData.pos;
+            
+            let productos = data.productos.filter(p => p.disponible);
+            
+            if (categoriaActual) {
+                productos = productos.filter(p => p.categoria === categoriaActual);
+            }
+            
+            if (busqueda) {
+                productos = productos.filter(p => p.nombre.toLowerCase().includes(busqueda));
+            }
+            
+            mostrarProductos(productos);
+        }
+
+        // Agregar producto al carrito
+        function agregarAlCarrito(productoId) {
+            const data = mockData.pos;
+            const producto = data.productos.find(p => p.id === productoId);
+            
+            if (!producto || !producto.disponible || producto.stock <= 0) {
+                alert('Producto no disponible');
+                return;
+            }
+            
+            const itemEnCarrito = data.carrito.find(item => item.producto.id === productoId);
+            
+            if (itemEnCarrito) {
+                itemEnCarrito.cantidad += 1;
+            } else {
+                data.carrito.push({
+                    producto: producto,
+                    cantidad: 1
+                });
+            }
+            
+            actualizarCarrito();
+        }
+
+        // Actualizar carrito
+        function actualizarCarrito() {
+            const data = mockData.pos;
+            
+            if (data.carrito.length === 0) {
+                document.getElementById('items-carrito').innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        <p class="text-sm">El carrito está vacío</p>
+                    </div>
+                `;
+                document.getElementById('btn-pagar').disabled = true;
+            } else {
+                const html = data.carrito.map((item, idx) => {
+                    const subtotalItem = item.producto.precio * item.cantidad;
+                    return `
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-gray-800">${item.producto.nombre}</h4>
+                                    <p class="text-xs text-gray-500">${utils.formatCurrency(item.producto.precio)} c/u</p>
+                                </div>
+                                <button onclick="eliminarDelCarrito(${idx})" class="text-red-500 hover:text-red-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="modificarCantidad(${idx}, -1)" class="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">-</button>
+                                    <span class="text-sm font-semibold w-8 text-center">${item.cantidad}</span>
+                                    <button onclick="modificarCantidad(${idx}, 1)" class="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">+</button>
+                                </div>
+                                <span class="text-sm font-bold text-gray-800">${utils.formatCurrency(subtotalItem)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('items-carrito').innerHTML = html;
+                document.getElementById('btn-pagar').disabled = false;
+            }
+            
+            // Calcular totales
+            const subtotal = data.carrito.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
+            const descuento = 0; // Por ahora sin descuentos
+            const total = subtotal - descuento;
+            
+            document.getElementById('subtotal').textContent = utils.formatCurrency(subtotal);
+            document.getElementById('descuento').textContent = utils.formatCurrency(descuento);
+            document.getElementById('total').textContent = utils.formatCurrency(total);
+            
+            // Guardar en venta actual
+            data.ventaActual.subtotal = subtotal;
+            data.ventaActual.descuento = descuento;
+            data.ventaActual.total = total;
+            data.ventaActual.items = data.carrito.map(item => ({
+                producto: item.producto.nombre,
+                cantidad: item.cantidad,
+                precio: item.producto.precio,
+                subtotal: item.producto.precio * item.cantidad
+            }));
+        }
+
+        // Modificar cantidad
+        function modificarCantidad(idx, cambio) {
+            const data = mockData.pos;
+            const item = data.carrito[idx];
+            
+            item.cantidad += cambio;
+            
+            if (item.cantidad <= 0) {
+                data.carrito.splice(idx, 1);
+            }
+            
+            actualizarCarrito();
+        }
+
+        // Eliminar del carrito
+        function eliminarDelCarrito(idx) {
+            const data = mockData.pos;
+            data.carrito.splice(idx, 1);
+            actualizarCarrito();
+        }
+
+        // Mostrar modal de pago
+        function mostrarModalPago() {
+            const data = mockData.pos;
+            document.getElementById('total-pagar').textContent = utils.formatCurrency(data.ventaActual.total);
+            
+            const htmlMedios = data.mediosPago.map(mp => `
+                <button onclick="seleccionarMedioPago(${mp.id})" 
+                        class="medio-pago-btn w-full p-3 border-2 border-gray-200 rounded-xl text-left hover:border-green-500 transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${mp.icono}</span>
+                        <span class="font-semibold text-gray-800">${mp.nombre}</span>
+                    </div>
+                </button>
+            `).join('');
+            
+            document.getElementById('medios-pago-lista').innerHTML = htmlMedios;
+            document.getElementById('modal-pago').classList.remove('hidden');
+            document.getElementById('modal-pago').classList.add('flex');
+        }
+
+        // Seleccionar medio de pago
+        function seleccionarMedioPago(medioPagoId) {
+            medioPagoSeleccionado = medioPagoId;
+            document.querySelectorAll('.medio-pago-btn').forEach(btn => {
+                btn.classList.remove('border-green-500', 'bg-green-50');
+                btn.classList.add('border-gray-200');
+            });
+            event.target.closest('.medio-pago-btn').classList.remove('border-gray-200');
+            event.target.closest('.medio-pago-btn').classList.add('border-green-500', 'bg-green-50');
+        }
+
+        // Cerrar modal de pago
+        function cerrarModalPago() {
+            document.getElementById('modal-pago').classList.add('hidden');
+            document.getElementById('modal-pago').classList.remove('flex');
+            medioPagoSeleccionado = null;
+        }
+
+        // Procesar pago
+        function procesarPago() {
+            if (!medioPagoSeleccionado) {
+                alert('Por favor selecciona un medio de pago');
+                return;
+            }
+            
+            const data = mockData.pos;
+            const medioPago = data.mediosPago.find(mp => mp.id === medioPagoSeleccionado);
+            
+            // Simular venta
+            const venta = {
+                id: data.ventasHoy.length + 1,
+                hora: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+                productos: data.ventaActual.items.length,
+                total: data.ventaActual.total,
+                medioPago: medioPago.nombre,
+                cliente: data.ventaActual.cliente || null
+            };
+            
+            // Limpiar carrito
+            data.carrito = [];
+            data.ventaActual = {
+                items: [],
+                subtotal: 0,
+                descuento: 0,
+                total: 0,
+                cliente: null,
+                medioPago: null
+            };
+            
+            // Actualizar caja
+            data.caja.totalVentas += venta.total;
+            data.caja.efectivoEsperado = data.caja.fondoInicial + data.caja.totalVentas;
+            
+            // Cerrar modal y actualizar
+            cerrarModalPago();
+            actualizarCarrito();
+            actualizarInfoCaja();
+            
+            alert(`Venta realizada exitosamente por ${utils.formatCurrency(venta.total)}`);
+        }
+
+        // Mostrar modal de caja
+        function mostrarModalCaja() {
+            actualizarInfoCaja();
+            document.getElementById('modal-caja').classList.remove('hidden');
+            document.getElementById('modal-caja').classList.add('flex');
+        }
+
+        // Cerrar modal de caja
+        function cerrarModalCaja() {
+            document.getElementById('modal-caja').classList.add('hidden');
+            document.getElementById('modal-caja').classList.remove('flex');
+        }
+
+        // Actualizar info de caja
+        function actualizarInfoCaja() {
+            const data = mockData.pos;
+            document.getElementById('caja-estado-modal').textContent = data.caja.estado === 'abierta' ? 'Abierta' : 'Cerrada';
+            document.getElementById('caja-fondo').textContent = utils.formatCurrency(data.caja.fondoInicial);
+            document.getElementById('caja-ventas').textContent = utils.formatCurrency(data.caja.totalVentas);
+            document.getElementById('caja-esperado').textContent = utils.formatCurrency(data.caja.efectivoEsperado);
+            document.getElementById('estado-caja').textContent = data.caja.estado === 'abierta' ? 'Abierta' : 'Cerrada';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductos();
+            actualizarInfoCaja();
+        });
+    </script>
+</body>
+</html>
+

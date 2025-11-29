@@ -22,11 +22,22 @@ Un **sistema integral único y multi-site** que unifica todas las operaciones de
 
 1. **Sistema único centralizado** con múltiples sitios independientes (uno por franquicia)
 2. **Gestión completa de pedidos** de franquiciados al dueño
-3. **Registro de ventas** al público final desde cada franquicia
-4. **Intranet de comunicación** entre dueño y franquiciados
-5. **Business Intelligence** con dashboards, reportes y análisis predictivo
-6. **Control de producción** basado en datos reales de demanda
-7. **Gestión de promociones** centralizada y efectiva
+3. **Punto de Venta (POS) Web** para ventas al público final en cada franquicia
+4. **Registro de ventas** al público final desde cada franquicia
+5. **Intranet de comunicación** entre dueño y franquiciados
+6. **Business Intelligence** con dashboards, reportes y análisis predictivo
+7. **Control de producción** basado en datos reales de demanda
+8. **Gestión de promociones** centralizada y efectiva
+
+### Arquitectura de Tres Vistas
+
+El sistema ofrece **tres interfaces especializadas** según el rol y necesidad del usuario, todas conectadas a la misma base de datos centralizada:
+
+1. **Vista Dueño**: Dashboard de Business Intelligence y control centralizado de todas las franquicias
+2. **Vista Franquiciado**: Gestión de pedidos al dueño, análisis de su franquicia, y control de stock
+3. **Vista POS (Punto de Venta)**: Interfaz web operativa para realizar ventas al público en tiempo real
+
+Todas las vistas comparten la misma información centralizada, pero muestran datos y funcionalidades adaptadas a cada rol.
 
 ### Modelo de Negocio
 
@@ -61,6 +72,19 @@ Un **sistema integral único y multi-site** que unifica todas las operaciones de
 7. **Gestión eficiente de pedidos** al dueño desde un solo lugar
 8. **Información en tiempo real** para tomar decisiones rápidas
 9. **Identificación de patrones** de venta (horarios, días, productos más vendidos)
+
+### Objetivos para el Módulo POS
+
+1. **Agilizar el proceso de venta** mediante interfaz optimizada y rápida
+2. **Reducir errores** en cobros y cálculos mediante automatización
+3. **Control de stock en tiempo real** evitando ventas de productos sin disponibilidad
+4. **Múltiples puntos de venta** simultáneos con independencia de cajas
+5. **Trazabilidad completa** de todas las transacciones realizadas
+6. **Integración con sistemas de pago** para agilizar cobros
+7. **Reducir tiempos de atención** al cliente mediante interfaz intuitiva
+8. **Control de seguridad** mediante usuarios, roles y permisos
+9. **Sincronización automática** con el sistema central para reportes en tiempo real
+10. **Menú digital** accesible para clientes mediante código QR
 
 ### Objetivos Técnicos
 
@@ -98,20 +122,29 @@ El sistema es **único y centralizado** pero permite la gestión independiente d
    - Separación de datos por franquicia
    - Configuración personalizable por franquicia
 
-2. **Vista consolidada para el dueño**
+2. **Tres Vistas Especializadas con Información Centralizada**
+   - **Vista Dueño**: Dashboard de BI y control consolidado
+   - **Vista Franquiciado**: Gestión de pedidos y análisis de su franquicia
+   - **Vista POS**: Interfaz operativa para ventas al público en tiempo real
+   - Todas comparten la misma base de datos centralizada
+   - Sincronización en tiempo real entre vistas
+
+3. **Vista consolidada para el dueño**
    - Acceso a todos los sites/franquicias
    - Dashboard consolidado con métricas de toda la red
    - Reportes comparativos entre franquicias
+   - Visualización de ventas en tiempo real desde el POS
 
-3. **Gestión centralizada de producción**
+4. **Gestión centralizada de producción**
    - El dueño ve todos los pedidos de todas las franquicias
-   - Planificación de producción basada en pedidos consolidados
-   - Control de inventario central
+   - Planificación de producción basada en pedidos consolidados y ventas en tiempo real
+   - Control de inventario central actualizado desde el POS
 
-4. **Comunicación bidireccional**
+5. **Comunicación bidireccional**
    - Canal de comunicación desde el dueño a todas las franquicias
    - Canal de comunicación desde cada franquicia al dueño
    - Notificaciones y alertas
+   - Sincronización de datos en tiempo real entre POS y sistema central
 
 ---
 
@@ -233,6 +266,188 @@ El sistema es **único y centralizado** pero permite la gestión independiente d
 - Recomendaciones automáticas de producción y stock
 - Predicción de días/horarios de mayor demanda
 
+### 4.10. Módulo Punto de Venta (POS) Web
+
+El módulo POS es la interfaz operativa principal para realizar ventas al público en cada franquicia. Es un sistema web optimizado para uso en punto de venta, con algunas funcionalidades móviles complementarias.
+
+#### 4.10.1. Gestión de Ventas
+
+**Ventas por Mostrador (Take Away):**
+- Interfaz rápida para ventas de mostrador
+- Selección rápida de productos
+- Proceso de venta optimizado para velocidad
+- Impresión de tickets opcional
+
+**Ventas por Mesa (si aplica):**
+- Gestión de mesas para panaderías con espacio de consumo
+- Asignación de clientes a mesas
+- Múltiples ventas simultáneas por mesa
+- Transferencia de consumos entre mesas
+
+**Carta/Menú Digital con QR:**
+- Generación automática de código QR para cada franquicia
+- Menú digital accesible desde celulares de clientes
+- Sin necesidad de descargar apps
+- Actualización en tiempo real de disponibilidad y precios
+
+**Asignación de Clientes:**
+- Vinculación de nombre de cliente a cualquier venta
+- Historial de compras por cliente
+- Verificación de último pedido
+- Opción de replicar pedidos anteriores
+
+**Múltiples Medios de Pago:**
+- Efectivo
+- Tarjeta de débito
+- Tarjeta de crédito
+- Transferencia bancaria
+- Códigos QR (Mercado Pago, etc.)
+- Múltiples medios de pago en una misma venta
+
+**Descuentos:**
+- Descuentos fijos (monto determinado)
+- Descuentos porcentuales
+- Descuentos automáticos por cliente
+- Descuentos por promociones activas
+- Control de límites de descuento por usuario
+
+**Cierre Parcial de Ventas:**
+- Posibilidad de cobrar solo algunos productos de una venta
+- Pago fraccionado en múltiples transacciones
+- Registro de estado de venta parcial
+
+**Control de Propinas:**
+- Registro de propinas recibidas
+- Asignación de propinas por venta
+- Reportes de propinas por período
+
+#### 4.10.2. Gestión de Productos en POS
+
+**Visualización de Productos:**
+- Vista por categorías (Pan, Facturas, Tortas, etc.)
+- Búsqueda rápida de productos
+- Productos favoritos destacados
+- Vista de productos más vendidos
+
+**Control de Stock en Tiempo Real:**
+- Indicadores visuales de disponibilidad
+- Alertas de productos sin stock
+- Prohibición automática de vender productos sin stock
+- Actualización instantánea después de cada venta
+
+**Modificadores y Adicionales:**
+- Opciones adicionales para productos (ej: pan con o sin semillas)
+- Modificadores de productos
+- Combos y promociones
+
+**Precios Dinámicos:**
+- Diferentes listas de precios según cliente
+- Aplicación automática de promociones
+- Precios por volumen
+
+#### 4.10.3. Caja y Arqueo
+
+**Arqueo de Caja:**
+- Apertura y cierre de caja
+- Control de fondo inicial
+- Registro de todos los movimientos
+- Cálculo automático de diferencia
+- Reporte de arqueo detallado
+
+**Arqueo Ciego:**
+- Opción de arqueo sin mostrar totales esperados
+- Recuento seguro de ingresos y egresos
+- Control de honestidad y seguridad
+
+**Movimientos de Caja:**
+- Registro de ingresos no relacionados con ventas
+- Registro de egresos (gastos operativos)
+- Justificación de movimientos
+- Control de autorizaciones
+
+**Múltiples Cajas:**
+- Trabajo simultáneo con múltiples cajas
+- Asignación de cajas por usuario
+- Independencia entre cajas
+- Consolidación de arqueos
+
+#### 4.10.4. Usuarios y Permisos
+
+**Múltiples Usuarios:**
+- Creación ilimitada de usuarios
+- Usuarios por rol (Cajero, Supervisor, Administrador)
+- Gestión de accesos diferenciados
+
+**Roles de Usuarios:**
+- Cajero: Solo ventas y arqueo de su caja
+- Supervisor: Ventas, arqueos, movimientos de caja, reportes
+- Administrador: Acceso completo a todas las funcionalidades
+
+**Asignación de Cajas:**
+- Cada usuario puede tener acceso a cajas específicas
+- Restricción de acceso a cajas de otras franquicias
+- Control de rotación de personal
+
+**PIN de Autorización:**
+- PIN para operaciones sensibles (descuentos, anulaciones)
+- Autorización por supervisor
+- Registro de autorizaciones
+
+**Permisos Granulares:**
+- Permisos por funcionalidad (descuentos, anulaciones, arqueo, etc.)
+- Personalización de permisos por rol
+- Auditoría de acciones por usuario
+
+#### 4.10.5. Integración con Sistema Central
+
+**Sincronización en Tiempo Real:**
+- Todas las ventas se registran instantáneamente en el sistema central
+- Actualización inmediata de stock
+- Sincronización bidireccional de datos
+
+**Actualización Automática:**
+- Precios actualizados automáticamente
+- Promociones aplicadas sin intervención manual
+- Productos nuevos o desactivados se reflejan automáticamente
+- Stock actualizado en tiempo real
+
+**Reportes Consolidados:**
+- Las ventas del POS alimentan los reportes del Franquiciado
+- Datos consolidados para el Dueño
+- Análisis unificado de toda la operación
+
+**Historial Completo:**
+- Registro detallado de todas las transacciones
+- Trazabilidad completa de cada venta
+- Fecha, hora, usuario, productos, montos
+- Integración con sistema de facturación
+
+#### 4.10.6. Funcionalidades Adicionales
+
+**Impresión:**
+- Tickets de venta
+- Tickets de control de mesa
+- Comandas para cocina (si aplica)
+- Soporte para impresoras USB, Serie y Ethernet
+
+**Facturación:**
+- Integración con impresoras fiscales
+- Emisión de comprobantes fiscales
+- Facturación electrónica (según configuración)
+- Control de numeración de facturas
+
+**App Móvil Complementaria:**
+- Funcionalidades básicas del POS en dispositivos móviles
+- Útil para ventas rápidas o pedidos externos
+- Sincronización con POS principal
+- Acceso offline con sincronización posterior
+
+**Notificaciones:**
+- Alertas de stock bajo durante ventas
+- Notificaciones de promociones activas
+- Recordatorios de tareas pendientes
+- Alertas del sistema central
+
 ---
 
 ## 5. Beneficios para Franquiciados
@@ -269,6 +484,17 @@ El sistema es **único y centralizado** pero permite la gestión independiente d
 
 - **Canal directo con el dueño**: Comunicación estructurada y documentada.
 - **Acceso a promociones**: Conocer y aplicar promociones relevantes de forma inmediata.
+
+### 5.7. Beneficios del Módulo POS
+
+- **Agilización de ventas**: Interfaz optimizada para realizar ventas rápidamente, reduciendo tiempos de atención
+- **Reducción de errores**: Cálculos automáticos eliminan errores manuales en precios y totales
+- **Control de stock automático**: No se pueden vender productos sin stock, evitando problemas con clientes
+- **Trazabilidad completa**: Registro detallado de cada venta para auditoría y análisis
+- **Múltiples medios de pago**: Facilidad para aceptar diferentes formas de pago desde un solo sistema
+- **Menú digital para clientes**: Código QR permite a clientes ver el menú sin necesidad de personal
+- **Gestión de caja profesional**: Arqueo de caja estructurado y control de movimientos
+- **Datos en tiempo real**: Todas las ventas se registran instantáneamente para análisis inmediato
 
 ---
 
@@ -430,14 +656,16 @@ El sistema es **único y centralizado** pero permite la gestión independiente d
 ### Fase 1: MVP (Mínimo Producto Viable)
 
 **Prioridad Alta:**
-- Autenticación y roles (dueño, franquiciado)
+- Autenticación y roles (dueño, franquiciado, cajero)
 - Gestión básica de pedidos
+- **POS básico**: Ventas por mostrador, productos, carrito, checkout
+- **Caja básica**: Apertura/cierre de caja, arqueo simple
 - Registro de ventas
 - Dashboard básico para dueño
 - Dashboard básico para franquiciado
 - Intranet básica de comunicación
 
-**Objetivo:** Tener un sistema funcional que solucione el problema principal de pedidos y ventas.
+**Objetivo:** Tener un sistema funcional que solucione el problema principal de pedidos y ventas, incluyendo el POS operativo.
 
 ### Fase 2: Business Intelligence Básico
 
