@@ -268,21 +268,37 @@ El sistema es **único y centralizado** pero permite la gestión independiente d
 
 ### 4.10. Módulo Punto de Venta (POS) Web
 
-El módulo POS es la interfaz operativa principal para realizar ventas al público en cada franquicia. Es un sistema web optimizado para uso en punto de venta, con algunas funcionalidades móviles complementarias.
+El módulo POS es la interfaz operativa principal para realizar ventas al público en cada franquicia. Es un sistema web optimizado para uso en punto de venta, con enfoque en gestión de mesas similar a sistemas como Fudo, diseñado para panaderías con espacio de consumo o ventas por mostrador.
 
-#### 4.10.1. Gestión de Ventas
+#### 4.10.1. Gestión de Mesas
+
+**Vista Principal - Mapa de Mesas:**
+- Grid visual de todas las mesas disponibles
+- Estados visuales claros: Libre (verde), Ocupada (naranja/amarillo), Con pedido pendiente (azul), Cerrada (gris)
+- Click en mesa para abrir/ver pedido
+- Vista responsive adaptada a diferentes tamaños de pantalla
+- Indicadores de tiempo de ocupación y total de la mesa
+
+**Gestión de Mesas:**
+- Abrir nueva mesa al hacer click en mesa libre
+- Ver estado de todas las mesas en tiempo real
+- Asignación de clientes a mesas (opcional)
+- Transferencia de productos entre mesas
+- Dividir cuenta entre múltiples clientes
+- Ver historial de mesas del día
+- Cerrar mesa y procesar pago
+
+**Ventas por Mesa:**
+- Agregar productos a una mesa específica
+- Múltiples productos por mesa
+- Modificar cantidades y eliminar productos
+- Ver resumen de cada mesa antes de cerrar
+- Guardar estado de mesas entre sesiones
 
 **Ventas por Mostrador (Take Away):**
-- Interfaz rápida para ventas de mostrador
-- Selección rápida de productos
-- Proceso de venta optimizado para velocidad
-- Impresión de tickets opcional
-
-**Ventas por Mesa (si aplica):**
-- Gestión de mesas para panaderías con espacio de consumo
-- Asignación de clientes a mesas
-- Múltiples ventas simultáneas por mesa
-- Transferencia de consumos entre mesas
+- Opción de "Mesa 0" o "Mostrador" para ventas rápidas sin mesa física
+- Mismo flujo de agregar productos y procesar pago
+- Ideal para ventas al paso o para llevar
 
 **Carta/Menú Digital con QR:**
 - Generación automática de código QR para cada franquicia

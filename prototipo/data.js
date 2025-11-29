@@ -227,15 +227,18 @@ const mockData = {
             { id: 18, nombre: "Agua Mineral", categoria: 5, precio: 250, stock: 50, disponible: true, favorito: false },
             { id: 19, nombre: "Gaseosa", categoria: 5, precio: 300, stock: 40, disponible: true, favorito: false }
         ],
-        carrito: [],
-        ventaActual: {
-            items: [],
-            subtotal: 0,
-            descuento: 0,
-            total: 0,
-            cliente: null,
-            medioPago: null
-        },
+        mesas: [
+            { id: 0, numero: "Mostrador", capacidad: 0, estado: "libre", pedido: null },
+            { id: 1, numero: 1, capacidad: 4, estado: "libre", pedido: null },
+            { id: 2, numero: 2, capacidad: 2, estado: "ocupada", pedido: { productos: [{ id: 5, cantidad: 2 }, { id: 16, cantidad: 1 }], total: 600 } },
+            { id: 3, numero: 3, capacidad: 6, estado: "libre", pedido: null },
+            { id: 4, numero: 4, capacidad: 2, estado: "ocupada", pedido: { productos: [{ id: 9, cantidad: 1 }, { id: 16, cantidad: 2 }], total: 1150 } },
+            { id: 5, numero: 5, capacidad: 4, estado: "libre", pedido: null },
+            { id: 6, numero: 6, capacidad: 2, estado: "libre", pedido: null },
+            { id: 7, numero: 7, capacidad: 4, estado: "ocupada", pedido: { productos: [{ id: 13, cantidad: 2 }], total: 700 } },
+            { id: 8, numero: 8, capacidad: 6, estado: "libre", pedido: null }
+        ],
+        mesaSeleccionada: null,
         mediosPago: [
             { id: 1, nombre: "Efectivo", icono: "💵", disponible: true },
             { id: 2, nombre: "Tarjeta Débito", icono: "💳", disponible: true },
