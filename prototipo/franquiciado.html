@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Franquiciado - Sistema Franquicias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+    <!-- Header Mobile-First -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800" id="nombre-franquicia">Mi Franquicia</h1>
+                    <p class="text-xs text-gray-500" id="ubicacion-franquicia">Ubicación</p>
+                </div>
+            </div>
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                F
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegación Mobile -->
+    <nav class="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="mostrarSeccion('dashboard', event.target)" class="nav-item flex flex-col items-center space-y-1 text-blue-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="text-xs font-medium">Inicio</span>
+            </button>
+            <button onclick="mostrarSeccion('pedidos', event.target)" class="nav-item flex flex-col items-center space-y-1 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span class="text-xs font-medium">Pedidos</span>
+            </button>
+            <button onclick="mostrarSeccion('stock', event.target)" class="nav-item flex flex-col items-center space-y-1 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+                <span class="text-xs font-medium">Stock</span>
+            </button>
+            <button onclick="mostrarSeccion('ventas', event.target)" class="nav-item flex flex-col items-center space-y-1 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="text-xs font-medium">Ventas</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="px-4 py-4">
+        <!-- Sección Dashboard -->
+        <div id="seccion-dashboard" class="seccion">
+            <!-- KPIs Principales -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Ventas Hoy</p>
+                    <p class="text-xl font-bold text-gray-800" id="ventas-hoy">$0</p>
+                    <p class="text-xs text-green-600 mt-1">
+                        <span id="crecimiento-hoy">+0%</span> vs ayer
+                    </p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Ventas Semana</p>
+                    <p class="text-xl font-bold text-gray-800" id="ventas-semana">$0</p>
+                    <p class="text-xs text-blue-600 mt-1">7 días</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Pedidos Pendientes</p>
+                    <p class="text-xl font-bold text-orange-600" id="pedidos-pendientes">0</p>
+                    <p class="text-xs text-gray-500 mt-1">Al dueño</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Stock Bajo</p>
+                    <p class="text-xl font-bold text-red-600" id="stock-bajo">0</p>
+                    <p class="text-xs text-gray-500 mt-1">Productos</p>
+                </div>
+            </div>
+
+            <!-- Gráfico Ventas por Horario -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Ventas por Horario (Hoy)</h2>
+                <canvas id="chartHorario" height="200"></canvas>
+            </div>
+
+            <!-- Productos Más Vendidos -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Productos Más Vendidos (Hoy)</h2>
+                <div id="productos-vendidos" class="space-y-2">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Medios de Pago -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Medios de Pago</h2>
+                <canvas id="chartMediosPago" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Sección Pedidos -->
+        <div id="seccion-pedidos" class="seccion hidden">
+            <div class="mb-4 flex space-x-2">
+                <button onclick="mostrarFormularioPedido()" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">
+                    + Nuevo Pedido
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="mb-4 flex space-x-2 overflow-x-auto pb-2">
+                <button onclick="filtrarPedidos('todos', event.target)" class="filtro-pedidos px-4 py-2 bg-blue-600 text-white rounded-full text-xs font-medium whitespace-nowrap">
+                    Todos
+                </button>
+                <button onclick="filtrarPedidos('pendiente', event.target)" class="filtro-pedidos px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-xs font-medium whitespace-nowrap">
+                    Pendientes
+                </button>
+                <button onclick="filtrarPedidos('en_camino', event.target)" class="filtro-pedidos px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-xs font-medium whitespace-nowrap">
+                    En Camino
+                </button>
+                <button onclick="filtrarPedidos('completado', event.target)" class="filtro-pedidos px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-xs font-medium whitespace-nowrap">
+                    Completados
+                </button>
+            </div>
+
+            <div id="lista-pedidos" class="space-y-3">
+                <!-- Se llenará con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Sección Stock -->
+        <div id="seccion-stock" class="seccion hidden">
+            <div class="mb-4">
+                <input type="text" placeholder="Buscar producto..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Alertas Stock Bajo -->
+            <div id="alertas-stock" class="mb-4">
+                <!-- Se llenará con JavaScript -->
+            </div>
+
+            <div id="lista-stock" class="space-y-3">
+                <!-- Se llenará con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Sección Ventas -->
+        <div id="seccion-ventas" class="seccion hidden">
+            <!-- Resumen -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Resumen</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Hoy</span>
+                        <span class="text-lg font-bold text-gray-800" id="resumen-hoy">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Ayer</span>
+                        <span class="text-lg font-bold text-gray-800" id="resumen-ayer">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Esta Semana</span>
+                        <span class="text-lg font-bold text-gray-800" id="resumen-semana">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Este Mes</span>
+                        <span class="text-lg font-bold text-gray-800" id="resumen-mes">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico Ventas por Día -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Ventas de la Semana</h2>
+                <canvas id="chartVentasSemana" height="200"></canvas>
+            </div>
+
+            <!-- Comparativa -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <h2 class="text-sm font-semibold text-gray-800 mb-3">Comparativa Semanal</h2>
+                <canvas id="chartComparativa" height="200"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Formulario Pedido -->
+    <div id="modal-pedido" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Nuevo Pedido</h2>
+                <button onclick="cerrarModalPedido()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="form-pedido" onsubmit="guardarPedido(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Producto</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Seleccionar producto...</option>
+                            <option value="pan_miga">Pan de Miga</option>
+                            <option value="facturas">Facturas</option>
+                            <option value="medialunas">Medialunas</option>
+                            <option value="tortas">Tortas</option>
+                            <option value="pan_frances">Pan Francés</option>
+                            <option value="sandwiches">Sandwiches</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
+                        <input type="number" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Notas (opcional)</label>
+                        <textarea class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                        Enviar Pedido
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let chartHorario, chartMediosPago, chartVentasSemana, chartComparativa;
+        let filtroActualPedidos = 'todos';
+
+        // Función para mostrar sección y actualizar navegación
+        function mostrarSeccion(seccion, element) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.seccion').forEach(el => el.classList.add('hidden'));
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(`seccion-${seccion}`).classList.remove('hidden');
+            
+            // Actualizar navegación
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('text-blue-600');
+                el.classList.add('text-gray-400');
+            });
+            if (element) {
+                element.closest('.nav-item').classList.remove('text-gray-400');
+                element.closest('.nav-item').classList.add('text-blue-600');
+            }
+
+            // Cargar datos de la sección si es necesario
+            if (seccion === 'pedidos') cargarPedidos();
+            if (seccion === 'stock') cargarStock();
+            if (seccion === 'ventas') cargarVentas();
+        }
+
+        // Cargar dashboard
+        function cargarDashboard() {
+            const data = mockData.franquiciado;
+            
+            // Actualizar header
+            document.getElementById('nombre-franquicia').textContent = data.nombre;
+            document.getElementById('ubicacion-franquicia').textContent = data.ubicacion;
+            
+            // Actualizar KPIs
+            document.getElementById('ventas-hoy').textContent = utils.formatCurrency(data.ventas.hoy);
+            document.getElementById('ventas-semana').textContent = utils.formatCurrency(data.ventas.semana);
+            
+            const crecimiento = ((data.ventas.hoy - data.ventas.ayer) / data.ventas.ayer * 100).toFixed(1);
+            document.getElementById('crecimiento-hoy').textContent = `${crecimiento > 0 ? '+' : ''}${crecimiento}%`;
+            
+            const pedidosPendientes = data.pedidos.filter(p => p.estado === 'pendiente').length;
+            document.getElementById('pedidos-pendientes').textContent = pedidosPendientes;
+            
+            const stockBajo = data.stock.filter(s => s.estado === 'bajo').length;
+            document.getElementById('stock-bajo').textContent = stockBajo;
+
+            // Gráfico ventas por horario
+            const ctxHorario = document.getElementById('chartHorario');
+            if (chartHorario) chartHorario.destroy();
+            chartHorario = new Chart(ctxHorario, {
+                type: 'bar',
+                data: {
+                    labels: data.ventasPorHorario.map(v => v.horario),
+                    datasets: [{
+                        label: 'Ventas',
+                        data: data.ventasPorHorario.map(v => v.ventas),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Productos más vendidos
+            const htmlProductos = data.productosMasVendidos.map(p => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">${utils.formatNumber(p.cantidad)} unidades</p>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800">${utils.formatCurrency(p.ventas)}</p>
+                </div>
+            `).join('');
+            document.getElementById('productos-vendidos').innerHTML = htmlProductos;
+
+            // Gráfico medios de pago
+            const ctxMedios = document.getElementById('chartMediosPago');
+            if (chartMediosPago) chartMediosPago.destroy();
+            chartMediosPago = new Chart(ctxMedios, {
+                type: 'doughnut',
+                data: {
+                    labels: data.mediosPago.map(m => m.metodo),
+                    datasets: [{
+                        data: data.mediosPago.map(m => m.cantidad),
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(249, 115, 22, 0.8)',
+                            'rgba(168, 85, 247, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Cargar pedidos
+        function cargarPedidos() {
+            const data = mockData.franquiciado;
+            let pedidos = data.pedidos;
+            
+            if (filtroActualPedidos !== 'todos') {
+                pedidos = pedidos.filter(p => p.estado === filtroActualPedidos);
+            }
+            
+            const html = pedidos.map(p => `
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <p class="text-xs text-gray-500">Pedido #${p.id}</p>
+                            <p class="text-sm font-semibold text-gray-800 mt-1">${p.fecha}</p>
+                        </div>
+                        <span class="px-3 py-1 text-xs font-medium rounded-full ${utils.getEstadoColor(p.estado)}">
+                            ${p.estado.replace('_', ' ')}
+                        </span>
+                    </div>
+                    <div class="space-y-2 mb-3">
+                        ${p.productos.map(prod => `
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-700">${prod.nombre} x${prod.cantidad}</span>
+                                <span class="text-gray-800 font-medium">${utils.formatCurrency(prod.precio * prod.cantidad)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-sm font-semibold text-gray-800">Total</span>
+                        <span class="text-lg font-bold text-gray-800">${utils.formatCurrency(p.total)}</span>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('lista-pedidos').innerHTML = html || '<p class="text-center text-gray-500 py-8">No hay pedidos con este filtro</p>';
+        }
+
+        // Filtrar pedidos
+        function filtrarPedidos(estado, element) {
+            filtroActualPedidos = estado;
+            document.querySelectorAll('.filtro-pedidos').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            if (element) {
+                element.classList.remove('bg-gray-200', 'text-gray-700');
+                element.classList.add('bg-blue-600', 'text-white');
+            }
+            cargarPedidos();
+        }
+
+        // Cargar stock
+        function cargarStock() {
+            const data = mockData.franquiciado;
+            
+            // Alertas stock bajo
+            const stockBajo = data.stock.filter(s => s.estado === 'bajo');
+            if (stockBajo.length > 0) {
+                const htmlAlertas = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-red-800 mb-1">Stock Bajo</h3>
+                                <p class="text-xs text-red-600">${stockBajo.length} producto(s) requiere(n) atención inmediata</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('alertas-stock').innerHTML = htmlAlertas;
+            } else {
+                document.getElementById('alertas-stock').innerHTML = '';
+            }
+
+            // Lista de stock
+            const html = data.stock.map(s => `
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <h3 class="text-base font-semibold text-gray-800">${s.producto}</h3>
+                            <p class="text-xs text-gray-500 mt-1">Mínimo: ${s.minimo} unidades</p>
+                        </div>
+                        <span class="px-3 py-1 text-xs font-medium rounded-full ${utils.getEstadoColor(s.estado)}">
+                            ${s.estado === 'bajo' ? 'Bajo' : 'OK'}
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-600">Stock Actual</span>
+                            <span class="text-sm font-bold ${s.estado === 'bajo' ? 'text-red-600' : 'text-green-600'}">${s.cantidad}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="h-2 rounded-full ${s.estado === 'bajo' ? 'bg-red-600' : 'bg-green-600'}" style="width: ${Math.min((s.cantidad / (s.minimo * 2)) * 100, 100)}%"></div>
+                        </div>
+                    </div>
+                    ${s.estado === 'bajo' ? `
+                        <button onclick="hacerPedidoRapido('${s.producto}')" class="mt-3 w-full bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                            Hacer Pedido
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+            document.getElementById('lista-stock').innerHTML = html;
+        }
+
+        // Cargar ventas
+        function cargarVentas() {
+            const data = mockData.franquiciado;
+            
+            document.getElementById('resumen-hoy').textContent = utils.formatCurrency(data.ventas.hoy);
+            document.getElementById('resumen-ayer').textContent = utils.formatCurrency(data.ventas.ayer);
+            document.getElementById('resumen-semana').textContent = utils.formatCurrency(data.ventas.semana);
+            document.getElementById('resumen-mes').textContent = utils.formatCurrency(data.ventas.mes);
+
+            // Gráfico ventas por día
+            const ctxSemana = document.getElementById('chartVentasSemana');
+            if (chartVentasSemana) chartVentasSemana.destroy();
+            chartVentasSemana = new Chart(ctxSemana, {
+                type: 'line',
+                data: {
+                    labels: data.ventasPorDia.map(v => v.dia.substring(0, 3)),
+                    datasets: [{
+                        label: 'Ventas',
+                        data: data.ventasPorDia.map(v => v.ventas),
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico comparativa
+            const ctxComp = document.getElementById('chartComparativa');
+            if (chartComparativa) chartComparativa.destroy();
+            chartComparativa = new Chart(ctxComp, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [
+                        {
+                            label: 'Semana Actual',
+                            data: data.ventasPorDia.map(v => v.ventas),
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Semana Anterior',
+                            data: data.ventasPorDia.map(v => v.ventas * 0.85),
+                            backgroundColor: 'rgba(156, 163, 175, 0.8)',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modal pedido
+        function mostrarFormularioPedido() {
+            document.getElementById('modal-pedido').classList.remove('hidden');
+            document.getElementById('modal-pedido').classList.add('flex');
+        }
+
+        function cerrarModalPedido() {
+            document.getElementById('modal-pedido').classList.add('hidden');
+            document.getElementById('modal-pedido').classList.remove('flex');
+        }
+
+        function guardarPedido(event) {
+            event.preventDefault();
+            alert('Pedido enviado correctamente!');
+            cerrarModalPedido();
+            document.getElementById('form-pedido').reset();
+            // En una app real, aquí se enviaría el pedido al servidor
+        }
+
+        function hacerPedidoRapido(producto) {
+            mostrarFormularioPedido();
+            // Pre-llenar el formulario con el producto
+            setTimeout(() => {
+                const select = document.querySelector('#form-pedido select');
+                if (select) {
+                    const valor = producto.toLowerCase().replace(/\s/g, '_');
+                    select.value = valor;
+                }
+            }, 100);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDashboard();
+        });
+    </script>
+</body>
+</html>
+
